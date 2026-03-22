@@ -23,11 +23,14 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository);
+        userService = new UserService(userRepository, notificationService);
     }
 
     @Test
@@ -55,5 +58,58 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.createUser("taken@example.com", "Bob"))
             .isInstanceOf(DuplicateEmailException.class);
+    }
+
+    @Test
+    void createUser_sendsWelcomeNotifications() {
+        User user = new User("new@example.com", "New User", UserRole.USER);
+        when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        userService.createUser("new@example.com", "New User");
+
+        verify(notificationService).sendWelcomeEmail(user);
+        verify(notificationService).sendSlackNotification(eq("#new-users"), contains("New User"));
+    }
+
+    @Test
+    void createUser_notificationFailure_doesNotFailCreation() {
+        User user = new User("new@example.com", "New User", UserRole.USER);
+        when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        doThrow(new RuntimeException("Slack down")).when(notificationService)
+            .sendSlackNotification(anyString(), anyString());
+
+        // Should not throw despite notification failure
+        User result = userService.createUser("new@example.com", "New User");
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void deleteUser_existingUser_deletesSuccessfully() {
+        User user = new User("alice@example.com", "Alice", UserRole.USER);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThatCode(() -> userService.deleteUser(1L)).doesNotThrowAnyException();
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void deleteUser_nonExistent_throwsException() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.deleteUser(99L))
+            .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    void promoteToAdmin_setsAdminRole() {
+        User user = new User("alice@example.com", "Alice", UserRole.USER);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User result = userService.promoteToAdmin(1L);
+
+        assertThat(result.getRole()).isEqualTo(UserRole.ADMIN);
     }
 }
