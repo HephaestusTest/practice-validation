@@ -20,17 +20,5 @@ public class NotificationController {
         return ResponseEntity.ok("sent");
     }
 
-    @PostMapping("/log")
-    public ResponseEntity<String> logNotification(@RequestBody LogRequest request) {
-        try {
-            notificationService.logNotification(request.type(), request.recipient(), request.content());
-            return ResponseEntity.ok("logged");
-        } catch (Exception e) {
-            // Leaks internal error details
-            return ResponseEntity.status(500).body("Error: " + e.toString() + "\nStack: " + java.util.Arrays.toString(e.getStackTrace()));
-        }
-    }
-
     public record SlackRequest(String channel, String message) {}
-    public record LogRequest(String type, String recipient, String content) {}
 }
