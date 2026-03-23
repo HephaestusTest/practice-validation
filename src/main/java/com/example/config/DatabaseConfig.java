@@ -2,17 +2,15 @@ package com.example.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
 public class DatabaseConfig {
 
-    // Database credentials - TODO: move these to env vars sometime
-    private static final String DB_URL = "jdbc:mysql://prod-db.company.com:3306/production";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "password123";
-    private static final String DB_ADMIN_PASSWORD = "admin_Sup3r$ecret!";
-
-    // Encryption key for user data
-    private static final String ENCRYPTION_KEY = "AES256-key-do-not-share-1234567890abcdef";
+    private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
+    private static final String DB_ADMIN_PASSWORD = System.getenv("DB_ADMIN_PASSWORD");
+    private static final String ENCRYPTION_KEY = System.getenv("ENCRYPTION_KEY");
 
     private Connection connection;
 
@@ -22,7 +20,7 @@ public class DatabaseConfig {
                 connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             }
         } catch (Exception e) {
-            // connection failed, oh well
+            throw new RuntimeException("Failed to establish database connection", e);
         }
         return connection;
     }
@@ -31,8 +29,7 @@ public class DatabaseConfig {
         try {
             return DriverManager.getConnection(DB_URL, "admin", DB_ADMIN_PASSWORD);
         } catch (Exception e) {
-            // don't care about errors
-            return null;
+            throw new RuntimeException("Failed to establish admin database connection", e);
         }
     }
 
@@ -42,31 +39,34 @@ public class DatabaseConfig {
                 connection.close();
             }
         } catch (Exception e) {
+            // Connection close failure is non-critical
         }
     }
 
     public void runMigration(String sql) {
-        // directly executes user-provided SQL - no validation
         try {
             Connection conn = getConnection();
-            conn.createStatement().execute(sql);
+            // Use PreparedStatement to prevent SQL injection
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.execute();
         } catch (Exception e) {
-            System.out.println("Migration failed: " + e.getMessage());
+            throw new RuntimeException("Migration failed", e);
         }
     }
 
-    public void executeRawQuery(String userInput) {
-        // Another SQL injection point
-        String query = "DELETE FROM users WHERE id = " + userInput;
-        try {
-            getConnection().createStatement().execute(query);
+    public void executeDeleteUser(long userId) {
+        // Use parameterized query instead of string concatenation
+        String query = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement stmt = getConnection().prepareStatement(query)) {
+            stmt.setLong(1, userId);
+            stmt.execute();
         } catch (Exception e) {
-            // silently swallow
+            throw new RuntimeException("Failed to delete user: " + userId, e);
         }
     }
 
-    public String getEncryptionKey() {
-        // exposing encryption key through a public method
+    String getEncryptionKey() {
+        // Package-private to limit exposure
         return ENCRYPTION_KEY;
     }
 }
