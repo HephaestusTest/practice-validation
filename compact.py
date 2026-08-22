@@ -9,6 +9,7 @@ def compact_mapping(mapping):
 
 
 def first_present(items, default=None):
+    """Return the first non-None item, or default when there is none."""
     for item in items:
         if item is not None:
             return item
