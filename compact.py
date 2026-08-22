@@ -14,3 +14,10 @@ def first_present(items, default=None):
         if item is not None:
             return item
     return default
+
+
+def partition(items, predicate):
+    matched, rest = [], []
+    for item in items:
+        (matched if predicate(item) else rest).append(item)
+    return matched, rest
