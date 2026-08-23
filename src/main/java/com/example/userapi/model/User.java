@@ -23,6 +23,9 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     protected User() {}
 
     public User(String email, String displayName, UserRole role) {
@@ -37,7 +40,10 @@ public class User {
     public String getDisplayName() { return displayName; }
     public UserRole getRole() { return role; }
     public Instant getCreatedAt() { return createdAt; }
+    public boolean isActive() { return active; }
 
     public void setDisplayName(String displayName) { this.displayName = displayName; }
     public void setRole(UserRole role) { this.role = role; }
+
+    public void deactivate() { this.active = false; }
 }
