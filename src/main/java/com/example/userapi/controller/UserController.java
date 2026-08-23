@@ -33,5 +33,16 @@ public class UserController {
         return ResponseEntity.status(201).body(user);
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<List<User>> listActiveUsers() {
+        return ResponseEntity.ok(userService.findActive());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
+        userService.deactivateUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
     public record CreateUserRequest(String email, String displayName) {}
 }

@@ -42,4 +42,24 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional(readOnly = true)
+    public List<User> findActive() {
+        return userRepository.findAll().stream().filter(User::isActive).toList();
+    }
+
+    @Transactional
+    public void deactivateUser(Long id) {
+        User user = findById(id);
+        if (!user.isActive()) {
+            return;
+        }
+        user.deactivate();
+        try {
+            userRepository.save(user);
+            log.info("Deactivated user: id={}", id);
+        } catch (Exception e) {
+            log.error("Failed to deactivate user: id={}", id, e);
+        }
+    }
 }
