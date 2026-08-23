@@ -43,6 +43,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
+    public List<User> findActive() {
+        return userRepository.findAll().stream().filter(User::isActive).toList();
+    }
+
     @Transactional
     public void deactivateUser(Long id) {
         User user = findById(id);
