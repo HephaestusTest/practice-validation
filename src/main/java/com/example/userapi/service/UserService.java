@@ -34,6 +34,16 @@ public class UserService {
     }
 
     @Transactional
+    public User changeRole(Long id, UserRole newRole) {
+        User user = findById(id);
+        UserRole previous = user.getRole();
+        user.setRole(newRole);
+        userRepository.save(user);
+        log.info("Role changed: id={}, from={}, to={}", id, previous, newRole);
+        return user;
+    }
+
+    @Transactional
     public User createUser(String email, String displayName) {
         if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("Email already in use: " + email);
