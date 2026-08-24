@@ -29,8 +29,23 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public List<User> findByRole(UserRole role) {
+        return userRepository.findAll().stream().filter(u -> u.getRole() == role).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Transactional
+    public User changeRole(Long id, UserRole newRole) {
+        User user = findById(id);
+        UserRole previous = user.getRole();
+        user.setRole(newRole);
+        userRepository.save(user);
+        log.info("Role changed: id={}, from={}, to={}", id, previous, newRole);
+        return user;
     }
 
     @Transactional

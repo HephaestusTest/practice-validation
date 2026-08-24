@@ -1,6 +1,7 @@
 package com.example.userapi.controller;
 
 import com.example.userapi.model.User;
+import com.example.userapi.model.UserRole;
 import com.example.userapi.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +34,17 @@ public class UserController {
         return ResponseEntity.status(201).body(user);
     }
 
+    @GetMapping("/by-role/{role}")
+    public ResponseEntity<List<User>> listByRole(@PathVariable String role) {
+        return ResponseEntity.ok(userService.findByRole(UserRole.valueOf(role)));
+    }
+
+    @PutMapping("/{id}/role")
+    public ResponseEntity<User> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
+        return ResponseEntity.ok(userService.changeRole(id, UserRole.valueOf(request.role())));
+    }
+
     public record CreateUserRequest(String email, String displayName) {}
+
+    public record ChangeRoleRequest(String role) {}
 }
