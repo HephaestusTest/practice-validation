@@ -34,6 +34,17 @@ public class UserService {
     }
 
     @Transactional
+    public void recordLastLogin(Long id) {
+        User user = findById(id);
+        try {
+            user.touchLastLogin();
+            userRepository.save(user);
+        } catch (Exception e) {
+            log.error("Could not record last login: id={}", id, e);
+        }
+    }
+
+    @Transactional
     public User createUser(String email, String displayName) {
         if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("Email already in use: " + email);

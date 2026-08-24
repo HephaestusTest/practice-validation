@@ -19,6 +19,9 @@ public class User {
     @Column(nullable = false)
     private Instant createdAt;
 
+    @Column
+    private Instant lastLoginAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
@@ -37,7 +40,10 @@ public class User {
     public String getDisplayName() { return displayName; }
     public UserRole getRole() { return role; }
     public Instant getCreatedAt() { return createdAt; }
+    public Instant getLastLoginAt() { return lastLoginAt; }
 
     public void setDisplayName(String displayName) { this.displayName = displayName; }
     public void setRole(UserRole role) { this.role = role; }
+
+    public void touchLastLogin() { this.lastLoginAt = Instant.now(); }
 }
