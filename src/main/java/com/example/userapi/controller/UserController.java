@@ -34,6 +34,11 @@ public class UserController {
         return ResponseEntity.status(201).body(user);
     }
 
+    @GetMapping("/by-role/{role}")
+    public ResponseEntity<List<User>> listByRole(@PathVariable String role) {
+        return ResponseEntity.ok(userService.findByRole(UserRole.valueOf(role)));
+    }
+
     @PutMapping("/{id}/role")
     public ResponseEntity<User> changeRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
         return ResponseEntity.ok(userService.changeRole(id, UserRole.valueOf(request.role())));

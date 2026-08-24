@@ -29,6 +29,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public List<User> findByRole(UserRole role) {
+        return userRepository.findAll().stream().filter(u -> u.getRole() == role).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<User> findAll() {
         return userRepository.findAll();
     }
