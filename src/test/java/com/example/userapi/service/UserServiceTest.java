@@ -56,4 +56,15 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.createUser("taken@example.com", "Bob"))
             .isInstanceOf(DuplicateEmailException.class);
     }
+
+    @Test
+    void deactivateUser_activeUser_savesDeactivated() {
+        User user = new User("bob@example.com", "Bob", UserRole.USER);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+
+        userService.deactivateUser(2L);
+
+        assertThat(user.isActive()).isFalse();
+        verify(userRepository).save(user);
+    }
 }
