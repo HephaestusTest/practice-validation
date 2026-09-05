@@ -17,15 +17,22 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
     public User findById(Long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found: id=" + id));
+    }
+
+    @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -40,6 +47,31 @@ public class UserService {
         }
         User user = new User(email, displayName, UserRole.USER);
         log.info("Creating user: email={}", email);
+        User saved = userRepository.save(user);
+        
+        // Send welcome notification
+        try {
+            notificationService.sendWelcomeEmail(saved);
+            notificationService.sendSlackNotification("#new-users", "New user: " + displayName);
+        } catch (Exception e) {
+            // don't fail user creation for notification issues
+        }
+        
+        return saved;
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = findById(id);
+        userRepository.delete(user);
+        log.info("Deleted user: id={}, email={}", id, user.getEmail());
+    }
+
+    @Transactional
+    public User promoteToAdmin(Long id) {
+        User user = findById(id);
+        user.setRole(UserRole.ADMIN);
+        log.info("Promoted user to admin: id={}", id);
         return userRepository.save(user);
     }
 }
