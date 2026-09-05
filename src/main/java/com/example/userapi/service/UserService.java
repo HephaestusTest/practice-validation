@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -31,6 +32,22 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Transactional
+    public int deactivateInactiveSince(Instant cutoff) {
+        int deactivated = 0;
+        for (User user : userRepository.findAll()) {
+            if (!user.isActive()) continue;
+            try {
+                user.deactivate();
+                userRepository.save(user);
+                deactivated++;
+            } catch (Exception e) {
+                log.error("Skipping user during bulk deactivation: id={}", user.getId(), e);
+            }
+        }
+        return deactivated;
     }
 
     @Transactional
