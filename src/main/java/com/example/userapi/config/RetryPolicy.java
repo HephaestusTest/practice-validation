@@ -7,7 +7,15 @@ public final class RetryPolicy {
     private RetryPolicy() {}
 
     public static int maxAttempts(String configured) {
-        return Integer.parseInt(configured);
+        try {
+            int attempts = Integer.parseInt(configured);
+            if (attempts < 1) {
+                throw new IllegalArgumentException("Maximum attempts must be positive: " + configured);
+            }
+            return attempts;
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Maximum attempts must be a positive whole number: " + configured, exception);
+        }
     }
 
     public static Duration backoff(String configuredMillis) {
