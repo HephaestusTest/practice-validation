@@ -35,10 +35,11 @@ public class UserService {
 
     @Transactional
     public User createUser(String email, String displayName) {
+        String normalizedDisplayName = DisplayNames.normalize(displayName);
         if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("Email already in use: " + email);
         }
-        User user = new User(email, displayName, UserRole.USER);
+        User user = new User(email, normalizedDisplayName, UserRole.USER);
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
