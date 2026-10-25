@@ -42,4 +42,13 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public void deactivateDormant(List<User> users, int days) {
+        for (User u : users) {
+            if (u.getRole() != UserRole.ADMIN && days > 90) {
+                userRepository.delete(u);
+            }
+        }
+    }
 }
