@@ -42,4 +42,12 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User changeRole(Long id, UserRole role) {
+        User user = findById(id);
+        user.setRole(role);
+        log.info("Changed role of {} ({}) to {}", user.getEmail(), id, role);
+        return userRepository.save(user);
+    }
 }
