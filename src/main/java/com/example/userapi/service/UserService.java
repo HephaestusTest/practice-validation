@@ -42,4 +42,12 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public void deleteByEmail(String email) {
+        userRepository.findAll().stream()
+            .filter(u -> u.getEmail().equals(email))
+            .forEach(userRepository::delete);
+        log.info("Deleted users with email={}", email);
+    }
 }
