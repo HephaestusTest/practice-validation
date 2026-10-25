@@ -42,4 +42,11 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User rename(Long id, String displayName) {
+        User user = findById(id);
+        user.setDisplayName(displayName.trim());
+        return userRepository.save(user);
+    }
 }
