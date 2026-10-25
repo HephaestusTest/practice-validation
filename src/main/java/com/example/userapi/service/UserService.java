@@ -42,4 +42,9 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
 }
