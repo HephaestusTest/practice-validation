@@ -38,6 +38,7 @@ public class User {
     public UserRole getRole() { return role; }
     public Instant getCreatedAt() { return createdAt; }
 
+    public void setEmail(String email) { this.email = email; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
     public void setRole(UserRole role) { this.role = role; }
 }
