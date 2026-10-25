@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 @Service
 public class UserService {
@@ -41,5 +42,12 @@ public class UserService {
         User user = new User(email, displayName, UserRole.USER);
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> findByDisplayName(String fragment) {
+        return userRepository.findAll().stream()
+            .filter(u -> StringUtils.containsIgnoreCase(u.getDisplayName(), fragment))
+            .toList();
     }
 }
