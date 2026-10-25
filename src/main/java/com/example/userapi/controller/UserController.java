@@ -33,5 +33,13 @@ public class UserController {
         return ResponseEntity.status(201).body(user);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam String q) {
+        List<User> matches = userService.findAll().stream()
+            .filter(u -> u.getDisplayName().toLowerCase().contains(q.toLowerCase()))
+            .toList();
+        return ResponseEntity.ok(matches);
+    }
+
     public record CreateUserRequest(String email, String displayName) {}
 }
