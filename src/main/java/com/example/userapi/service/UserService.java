@@ -42,4 +42,12 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        return userRepository.findAll().stream()
+            .filter(u -> u.getEmail().equalsIgnoreCase(email))
+            .findFirst()
+            .orElse(null);
+    }
 }
