@@ -42,4 +42,14 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public int demoteAllAdmins() {
+        List<User> admins = userRepository.findAll().stream()
+            .filter(u -> u.getRole() == UserRole.ADMIN)
+            .toList();
+        admins.forEach(u -> u.setRole(UserRole.USER));
+        userRepository.saveAll(admins);
+        return admins.size();
+    }
 }
