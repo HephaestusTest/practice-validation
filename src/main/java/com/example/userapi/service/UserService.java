@@ -42,4 +42,11 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User promoteToAdmin(Long id) {
+        User user = findById(id);
+        user.setRole(UserRole.ADMIN);
+        return userRepository.save(user);
+    }
 }
