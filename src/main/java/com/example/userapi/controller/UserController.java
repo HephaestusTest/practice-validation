@@ -2,6 +2,7 @@ package com.example.userapi.controller;
 
 import com.example.userapi.model.User;
 import com.example.userapi.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request) {
         User user = userService.createUser(request.email(), request.displayName());
-        return ResponseEntity.status(201).body(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     public record CreateUserRequest(String email, String displayName) {}
