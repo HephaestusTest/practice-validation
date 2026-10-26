@@ -33,6 +33,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public boolean userExists(Long id) {
+        return userRepository.existsById(id);
+    }
+
     @Transactional
     public User createUser(String email, String displayName) {
         if (userRepository.existsByEmail(email)) {
