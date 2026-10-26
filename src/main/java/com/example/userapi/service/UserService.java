@@ -42,4 +42,9 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional(readOnly = true)
+    public long countUsers() {
+        return userRepository.findAll().size();
+    }
 }
