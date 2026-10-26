@@ -33,6 +33,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public long countUsers() {
+        return userRepository.count();
+    }
+
     @Transactional
     public User createUser(String email, String displayName) {
         if (userRepository.existsByEmail(email)) {
