@@ -5,8 +5,6 @@ import com.example.userapi.exception.DuplicateEmailException;
 import com.example.userapi.model.User;
 import com.example.userapi.model.UserRole;
 import com.example.userapi.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +12,6 @@ import java.util.List;
 
 @Service
 public class UserService {
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
-
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -39,7 +35,6 @@ public class UserService {
             throw new DuplicateEmailException("Email already in use: " + email);
         }
         User user = new User(email, displayName, UserRole.USER);
-        log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
 }
