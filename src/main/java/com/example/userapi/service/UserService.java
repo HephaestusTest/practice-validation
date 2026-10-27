@@ -42,4 +42,14 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User changeEmail(Long id, String newEmail) {
+        User user = findById(id);
+        if (!newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
+            throw new DuplicateEmailException("Email already in use: " + newEmail);
+        }
+        user.setEmail(newEmail);
+        return userRepository.save(user);
+    }
 }
