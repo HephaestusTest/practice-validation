@@ -56,4 +56,15 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.createUser("taken@example.com", "Bob"))
             .isInstanceOf(DuplicateEmailException.class);
     }
+
+    @Test
+    void changeEmail_toAnAddressInUse_isRefused() {
+        User user = new User("alice@example.com", "Alice", UserRole.USER);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail("bob@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.changeEmail(1L, "bob@example.com"))
+            .isInstanceOf(DuplicateEmailException.class);
+        verify(userRepository, never()).save(any());
+    }
 }
