@@ -42,4 +42,14 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User renameUser(Long id, String displayName) {
+        if (displayName == null || displayName.isBlank()) {
+            throw new IllegalArgumentException("Display name must not be blank");
+        }
+        User user = findById(id);
+        user.setDisplayName(displayName.strip());
+        return userRepository.save(user);
+    }
 }
