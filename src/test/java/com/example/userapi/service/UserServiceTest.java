@@ -56,4 +56,22 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.createUser("taken@example.com", "Bob"))
             .isInstanceOf(DuplicateEmailException.class);
     }
+
+    @Test
+    void renameUser_trimsTheNewName() {
+        User user = new User("alice@example.com", "Alice", UserRole.USER);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User result = userService.renameUser(1L, "  Alice Smith ");
+
+        assertThat(result.getDisplayName()).isEqualTo("Alice Smith");
+    }
+
+    @Test
+    void renameUser_blankName_isRefused() {
+        assertThatThrownBy(() -> userService.renameUser(1L, " "))
+            .isInstanceOf(IllegalArgumentException.class);
+        verifyNoInteractions(userRepository);
+    }
 }

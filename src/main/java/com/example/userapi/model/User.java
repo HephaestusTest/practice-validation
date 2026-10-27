@@ -35,6 +35,7 @@ public class User {
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
     public UserRole getRole() { return role; }
     public Instant getCreatedAt() { return createdAt; }
 
