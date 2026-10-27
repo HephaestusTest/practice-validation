@@ -23,8 +23,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> listUsers() {
-        return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<List<User>> listUsers(@RequestParam(defaultValue = "0") int page) {
+        List<User> all = userService.findAll();
+        int from = Math.min(page * 25, all.size());
+        int to = Math.min(from + 25, all.size());
+        return ResponseEntity.ok(all.subList(from, to));
     }
 
     @PostMapping
