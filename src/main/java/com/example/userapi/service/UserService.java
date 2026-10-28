@@ -40,6 +40,7 @@ public class UserService {
         }
         User user = new User(email, displayName, UserRole.USER);
         log.info("Creating user: email={}", email);
+        System.out.println("created user " + user.getEmail());
         return userRepository.save(user);
     }
 }
