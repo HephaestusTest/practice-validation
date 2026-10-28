@@ -34,4 +34,7 @@ public class UserController {
     }
 
     public record CreateUserRequest(String email, String displayName) {}
+    @GetMapping("/count")
+    public long count() { return userService.countUsers(); }
+
 }
