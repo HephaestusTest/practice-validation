@@ -34,4 +34,7 @@ public class UserController {
     }
 
     public record CreateUserRequest(String email, String displayName) {}
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) { try { userService.deleteUser(id); } catch (Exception e) { } }
+
 }
