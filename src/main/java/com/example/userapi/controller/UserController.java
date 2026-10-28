@@ -23,8 +23,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> listUsers() {
-        return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<List<User>> listUsers(@RequestParam int limit) {
+        return ResponseEntity.ok(userService.findAll().subList(0, limit));
     }
 
     @PostMapping
