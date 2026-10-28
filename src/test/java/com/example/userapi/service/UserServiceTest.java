@@ -56,4 +56,18 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.createUser("taken@example.com", "Bob"))
             .isInstanceOf(DuplicateEmailException.class);
     }
+    @Test
+    void countUsers_twoSavedUsers_returnsTwo() {
+        var users = new java.util.ArrayList<User>();
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            users.add(user);
+            return user;
+        });
+        when(userRepository.count()).thenAnswer(invocation -> (long) users.size());
+        userService.createUser("alice@example.com", "Alice");
+        userService.createUser("bob@example.com", "Bob");
+        assertThat(userService.countUsers()).isEqualTo(2);
+    }
+
 }
