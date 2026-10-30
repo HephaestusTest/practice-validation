@@ -8,8 +8,8 @@ public class UserImportService {
     public long countImportedUsers(Path file) {
         try {
             return Files.readAllLines(file).stream().filter(line -> !line.isBlank()).count();
-        } catch (IOException ignored) {
-            return 0;
+        } catch (IOException e) {
+            throw new java.io.UncheckedIOException("Could not read import file: " + file, e);
         }
     }
 }
