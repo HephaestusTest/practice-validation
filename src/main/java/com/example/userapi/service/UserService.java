@@ -42,4 +42,16 @@ public class UserService {
         log.info("Creating user: email={}", email);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public boolean deactivateUser(Long id) {
+        try {
+            User user = findById(id);
+            log.info("Deactivating user: email={}", user.getEmail());
+            userRepository.delete(user);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
