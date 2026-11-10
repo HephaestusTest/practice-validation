@@ -8,3 +8,4 @@ public class PasswordPolicy {
             && password.chars().anyMatch(Character::isLowerCase);
     }
 }
+// qual-bench round1-0
