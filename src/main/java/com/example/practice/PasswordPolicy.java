@@ -1,0 +1,18 @@
+package com.example.practice;
+
+public class PasswordPolicy {
+    public boolean accepts(String password) {
+        return password != null && password.length() >= 12 && password.length() <= 192
+            && password.chars().anyMatch(Character::isDigit)
+            && password.chars().anyMatch(Character::isUpperCase)
+            && password.chars().anyMatch(Character::isLowerCase);
+    }
+}
+// qual-bench round1-0
+// qual-bench qual-pass2-0
+// qual-bench round1-0
+// qual-bench round1-0
+// qual-bench round2-0
+// qual-bench round3-0
+// qual-bench qual-b4-0
+// qual-bench round1-0
